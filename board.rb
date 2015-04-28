@@ -76,7 +76,10 @@ b[[2, 0]] = King.new(:black, [2, 0], b)
 b[[5, 5]] = King.new(:white, [5, 5], b)
 
 b[pos] = Queen.new(:black, pos, b)
-p b[pos].valid_moves
+# p b[pos].valid_moves
+
+b[[2,2]] = Pawn.new(:white, [2,2], b)
+p b[[2,2]].valid_moves
 # b.display
 # k = King.new(:w, [4,4], b)
 # b[[1,1]]

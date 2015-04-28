@@ -162,44 +162,25 @@ end
 class Pawn < Piece
   ATTACKS = [[1, -1], [1, 1]]
 
-  BLACK_STEPS =[
-    [2, 0],
-    [1, 0],
-    [1, -1],
-    [1, 1]
-  ]
-
-  WHITE_STEPS = [
-    [-2, 0],
-    [-1, 0],
-    [-1, -1],
-    [-1, 1]
-  ]
-
   def initialize(color, pos, board)
     super
     @symbol = :P
-    @delta = color == :black ? BLACK_STEPS : WHITE_STEPS
   end
 
   def valid_moves
     get_steps + get_attacks
-
-
-    # poss_move = [@delta[0][0] + @pos.first, @delta[0][1] + @pos.last]
-    # results << poss_move unless @board.occupied?(poss_move) && !@moved
-    # poss_move = [@delta[1][0] + @pos.first, @delta[1][1] + @pos.last]
-    # results << poss_move unless @board.occupied?(poss_move)
-
-
-    # if moved = false, jump step is valid
-    # otherwise:
-      # if unoccupied for forwards
-      # diagonals: only if diagonal occupied by enemy
   end
 
   def get_steps
+    direction = color == :black ? 1 : -1
 
+    results = []
+    poss_move = [2 * direction + @pos.first, 0 + @pos.last]
+    results << poss_move if !@board.occupied?(poss_move) && !@moved
+    poss_move = [1 * direction + @pos.first, 0 + @pos.last]
+    results << poss_move unless @board.occupied?(poss_move)
+
+    results
   end
 
   def get_attacks
