@@ -8,6 +8,7 @@ end
 
 class Piece
   attr_accessor :symbol, :color, :pos, :moved, :board
+  attr_reader :display
 
   def initialize(color, pos, board)
     @color, @pos, @board = color, pos, board
@@ -62,7 +63,8 @@ class King < SteppingPiece
 
   def initialize(color, pos, board)
     super
-    @symbol = :K
+    @symbol = :King
+    @display = '♚'.send(@color)
   end
 
   def deltas
@@ -85,7 +87,8 @@ class Knight < SteppingPiece
 
   def initialize(color, pos, board)
     super
-    @symbol = :H
+    @symbol = :Knight
+    @display = '♞'.send(@color)
   end
 
   def deltas
@@ -138,7 +141,8 @@ end
 class Rook < SlidingPiece
   def initialize(color, pos, board)
     super
-    @symbol = :R
+    @symbol = :Rook
+    @display = '♜'.send(@color)
     @slide_dirs = [:cardinal]
   end
 end
@@ -146,7 +150,8 @@ end
 class Bishop < SlidingPiece
   def initialize(color, pos, board)
     super
-    @symbol = :B
+    @symbol = :Bishop
+    @display = '♝'.send(@color)
     @slide_dirs = [:diagonal]
   end
 end
@@ -154,7 +159,8 @@ end
 class Queen < SlidingPiece
   def initialize(color, pos, board)
     super
-    @symbol = :Q
+    @symbol = :Queen
+    @display = '♛'.send(@color)
     @slide_dirs = [:cardinal, :diagonal]
   end
 end
@@ -164,7 +170,8 @@ class Pawn < Piece
 
   def initialize(color, pos, board)
     super
-    @symbol = :P
+    @symbol = :Pawn
+    @display = '♟'.send(@color)
   end
 
   def valid_moves

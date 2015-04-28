@@ -70,6 +70,10 @@ class Board
   end
 end
 
+puts "Cat".red.on_blue
+puts "♔ ".red.on_blue
+puts "♔ ".blue
+
 b = Board.new
 pos = [1,1]
 b[[2, 0]] = King.new(:black, [2, 0], b)
