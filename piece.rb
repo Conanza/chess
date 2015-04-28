@@ -183,26 +183,32 @@ class Pawn < Piece
   end
 
   def valid_moves
-    my_delta = @moved ? @delta.shift : @delta
+    get_steps + get_attacks
 
-    results = []
 
-    case
-
-    poss_move = [@delta[0][0] + @pos.first, @delta[0][1] + @pos.last]
-    results << poss_move unless @board.occupied?(poss_move) && !@moved
-    poss_move = [@delta[1][0] + @pos.first, @delta[1][1] + @pos.last]
-    results << poss_move unless @board.occupied?(poss_move)
-    poss_move = [@delta[2][0] + @pos.first, @delta[2][1] + @pos.last]
-    results << poss_move if @board.occupied_by_enemy?(@color, poss_move)
-    poss_move = [@delta[3][0] + @pos.first, @delta[3][1] + @pos.last]
-    results << poss_move if @board.occupied_by_enemy?(@color, poss_move)
-
+    # poss_move = [@delta[0][0] + @pos.first, @delta[0][1] + @pos.last]
+    # results << poss_move unless @board.occupied?(poss_move) && !@moved
+    # poss_move = [@delta[1][0] + @pos.first, @delta[1][1] + @pos.last]
+    # results << poss_move unless @board.occupied?(poss_move)
 
 
     # if moved = false, jump step is valid
     # otherwise:
       # if unoccupied for forwards
       # diagonals: only if diagonal occupied by enemy
+  end
+
+  def get_steps
+
+  end
+
+  def get_attacks
+    direction = color == :black ? 1 : -1
+
+    poss_attacks = ATTACKS.map do |attack|
+      [attack[0] * direction + pos[0], attack[1] + pos[1]]
+    end
+
+    poss_attacks.select { |pos| @board.occupied_by_enemy?(@color, pos) }
   end
 end
