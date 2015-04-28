@@ -9,8 +9,9 @@ class Board
   def display
     @board.each_with_index do |row, i|
       display_string = ""
-      row.each do |space|
-        space.nil? ? display_string += '_ ' : display_string += space.symbol.to_s + " "
+      row.each_with_index do |space, j|
+        color = (i + j).even? ? :on_blue : :on_magenta
+        space.nil? ? display_string += '   '.send(color) : display_string += " #{space.display} ".send(color)
       end
       puts "#{display_string}\n"
     end
@@ -70,10 +71,6 @@ class Board
   end
 end
 
-puts "Cat".red.on_blue
-puts "♔ ".red.on_blue
-puts "♔ ".blue
-
 b = Board.new
 pos = [1,1]
 b[[2, 0]] = King.new(:black, [2, 0], b)
@@ -84,7 +81,7 @@ b[pos] = Queen.new(:black, pos, b)
 
 b[[2,2]] = Pawn.new(:white, [2,2], b)
 p b[[2,2]].valid_moves
-# b.display
+b.display
 # k = King.new(:w, [4,4], b)
 # b[[1,1]]
 #
