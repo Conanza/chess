@@ -28,10 +28,6 @@ class Board
     puts ROW_BORDER.white.on_black
   end
 
-  def border_string
-
-  end
-
   def setup_board
     BASE_ROW.each_with_index do |piece, idx|
       @board[0][idx] = piece.new(:black, [0, idx], self)
@@ -55,7 +51,11 @@ class Board
   end
 
   def pieces_of(color)
-    @board.flatten.compact.select { |piece| piece.color == color }
+    pieces.select { |piece| piece.color == color }
+  end
+
+  def pieces
+    @board.flatten.compact
   end
 
   def occupied?(pos)
@@ -74,24 +74,19 @@ class Board
     check?(color) && pieces_of(color).all? { |piece| piece.valid_moves.empty? }
   end
 
-  def where_is_my_king(color)
-    @board.flatten.compact.find do |piece|
-      piece.is_a?(King) && piece.color == color
-    end
+  def my_king(color)
+    pieces_of(color).find { |piece| piece.is_a?(King) }
   end
 
   def check?(color)
-    king_pos = where_is_my_king(color).pos
-    @board.flatten.compact.any? { |piece| piece.moves.include?(king_pos) }
+    king_pos = my_king(color).pos
+    pieces.any? { |piece| piece.moves.include?(king_pos) }
     #return true if tile.is_a?(Piece) && tile.valid_moves.include?(king_pos)
   end
 
   def deep_dup
     new_board = Board.new(false)
-
-    @board.flatten.compact.each do |piece|
-      new_board[piece.pos] = piece.dup(new_board)
-    end
+    pieces.each { |piece| new_board[piece.pos] = piece.dup(new_board) }
 
     new_board
   end

@@ -16,28 +16,35 @@ class Game
   def play
     @board.display
     until @board.checkmate?(@current_player.color)
-
+      puts "#{current_color}, please make your move."
       begin
         start_pos, end_pos = @current_player.get_move
-        unless @board[start_pos].color == @current_player.color
+        if @board[start_pos].color != @current_player.color
           raise WrongColorError.new #so we don't need the new?
         end
+        @board.move(start_pos, end_pos)
       rescue WrongColorError
-        puts "You may only move #{@current_player.color.to_s.capitalize} pieces."
+        puts "You may only move #{current_color} pieces."
+        retry
+      rescue InvalidMoveError
+        puts "That is not a valid move."
         retry
       end
 
-      @board.move(start_pos, end_pos)
       switch_current_player
       @board.display
     end
 
     switch_current_player
-    puts "Game Over. #{@current_player.color.to_s.capitalize} won!"
+    puts "Game Over. #{current_color} won!"
   end
 
   def switch_current_player
     @current_player = @current_player == @player1 ? @player2 : @player1
+  end
+
+  def current_color
+    @current_player.color.to_s.capitalize
   end
 end
 
@@ -77,8 +84,6 @@ class HumanPlayer < Player
   }
 
   def get_move
-    puts "#{@color.to_s.capitalize}, please make your move."
-
     begin
       input = gets.downcase.chomp
       unless input.length == 5 && input =~ /\A[a-h][1-8] [a-h][1-8]\z/

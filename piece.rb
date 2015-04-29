@@ -5,8 +5,8 @@ class InvalidMoveError < StandardError
 end
 
 class Piece
-  attr_accessor :symbol, :color, :pos, :moved, :board
-  attr_reader :display
+  attr_accessor :pos, :moved
+  attr_reader :display, :symbol, :color
 
   def initialize(color, pos, board)
     @color, @pos, @board = color, pos, board
@@ -181,7 +181,7 @@ class Pawn < Piece
 
     results = []
     poss_move = [2 * direction + @pos.first, 0 + @pos.last]
-    results << poss_move if on_board?(poss_move) && !@board.occupied?(poss_move) && !@moved
+    results << poss_move if !@moved && on_board?(poss_move) && !@board.occupied?(poss_move)
     poss_move = [1 * direction + @pos.first, 0 + @pos.last]
     results << poss_move if on_board?(poss_move) && !@board.occupied?(poss_move)
 
