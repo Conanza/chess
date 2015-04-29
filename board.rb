@@ -5,9 +5,9 @@ require "byebug"
 class Board
   BASE_ROW = [Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook]
 
-  def initialize
+  def initialize(should_setup = true)
     @board = Array.new(8) { Array.new(8) { nil } }
-    setup_board
+    setup_board if should_setup
   end
 
   def display
@@ -15,7 +15,7 @@ class Board
       display_string = ""
       row.each_with_index do |space, j|
         color = (i + j).even? ? :on_blue : :on_magenta
-        space.nil? ? display_string += '   '.send(color) : display_string += " #{space.display} ".send(color)
+        space.nil? ? display_string += '  '.send(color) : display_string += "#{space.display} ".send(color)
       end
       puts "#{display_string}\n"
     end
@@ -29,12 +29,6 @@ class Board
 
     8.times { |idx| @board[1][idx] = Pawn.new(:black, [1, idx], self) }
     8.times { |idx| @board[6][idx] = Pawn.new(:white, [6, idx], self) }
-
-
-  end
-
-  def board_each(&prc)
-
   end
 
   def [](pos)
@@ -48,8 +42,8 @@ class Board
     @board[row][col] = value
   end
 
-  def on_board?
-
+  def pieces_of(color)
+    @board.flatten.compact.select { |piece| piece.color == color }
   end
 
   def occupied?(pos)
@@ -64,46 +58,27 @@ class Board
     occupied?(pos) && self[pos].color != my_color
   end
 
-  def piece_at(pos)
-
-  end
-
   def checkmate?(color)
-
+    check?(color) && pieces_of(color).all? { |piece| piece.valid_moves.empty? }
   end
 
   def where_is_my_king(color)
-    @board.each do |row|
-      row.each do |tile|
-        return tile if tile.is_a?(King) && tile.color == color
-      end
+    @board.flatten.compact.find do |piece|
+      piece.is_a?(King) && piece.color == color
     end
   end
 
   def check?(color)
     king_pos = where_is_my_king(color).pos
-
-    @board.each_with_index do |row, i|
-      row.each_with_index do |tile, j|
-        return true if tile.is_a?(Piece) && tile.valid_moves.include?(king_pos)
-      end
-    end
-    false
+    @board.flatten.compact.any? { |piece| piece.moves.include?(king_pos) }
+    #return true if tile.is_a?(Piece) && tile.valid_moves.include?(king_pos)
   end
 
   def deep_dup
-    new_board = Board.new
+    new_board = Board.new(false)
 
-    @board.each_with_index do |row, i|
-      row.each_with_index do |tile, j|
-        if !tile.nil?
-          piece_type = tile.class
-          position = tile.pos
-          color = tile.color
-          tile_copy = piece_type.new(color, position, new_board)
-          new_board[[i, j]] = tile_copy
-        end
-      end
+    @board.flatten.compact.each do |piece|
+      new_board[piece.pos] = piece.dup(new_board)
     end
 
     new_board
@@ -112,13 +87,9 @@ class Board
   def move(start_pos, end_pos)
     #whatever calls this should be damn ready to catch and InvalidMoveError
     piece = self[start_pos]
-
-    # if piece.valid_moves.include?(end_pos)
-    #   new_board = deep_dup
-    #   new_board.move!(start_pos, end_pos)
-      if !new_board.check?(piece.color)
-        move!(start_pos, end_pos)
-      end
+    if piece.valid_moves.include?(end_pos)
+      move!(start_pos, end_pos)
+      piece.moved = true
     else
       raise InvalidMoveError
     end
@@ -133,31 +104,13 @@ class Board
   end
 end
 
-b = Board.new
+b = Board.new(false)
+b[[0,0]] = King.new(:white, [0,0], b)
+b[[4,7]] = King.new(:black, [4,7], b)
+b[[6,1]] = Rook.new(:black, [6,1], b)
+b[[7,0]] = Rook.new(:black, [7,0], b)
+b[[7,4]] = Rook.new(:white, [7,4], b)
 b.display
-b[[5,3]] = Knight.new(:black, [5,3], b)
-b.display
+puts "Added A Knight"
 p b.check?(:white)
-# p b[[7,4]].valid_moves
-# 5.times { |i| b[[i,i]] = Pawn.new(:white, [i,i], b)}
-#
-#
-# b.display
-# p b[[4,4]].valid_moves
-# p b.object_id
-#
-#
-# puts
-# d = b.deep_dup
-#
-# d[[3,5]] = Pawn.new(:black, [4,6], d)
-# d.display
-# p d[[4,4]].valid_moves
-# p d.object_id
-# puts
-#
-# p b[[4,4]].valid_moves
-# p d[[4,4]].valid_moves
-#
-# d.move([4,4],[3,3])
-# d.display
+p b.checkmate?(:white)

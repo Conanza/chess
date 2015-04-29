@@ -16,10 +16,7 @@ class Piece
   end
 
   def valid_moves
-    # This Applies To All Pieces
-    # You can't have a piece between you and the destination.
-    # Your destination cannot contain a piece of your color.
-    raise NotImplementedError
+    moves.select { |pos| !move_into_check?(pos) }
   end
 
   def on_board?(pos)
@@ -31,18 +28,24 @@ class Piece
   end
 
   def move_into_check?(pos)
-    new_board = deep_dup
+    new_board = @board.deep_dup
     new_board.move!(@pos, pos)
-    return true if new_board.check?(@color)
-    false
+    new_board.check?(@color)
+  end
+
+  def dup(new_board)
+    piece_type = self.class
+    position = @pos.dup
+    color = @color
+    piece_type.new(color, position, new_board)
   end
 end
 
 
 class SteppingPiece < Piece
-  def valid_moves
+  def moves
     results = deltas.map { |delta| [delta[0] + @pos[0], delta[1] + @pos[1]] }
-    results.select { |pos|  on_board?(pos) && legal_move?(pos) && !move_into_check?(pos) }
+    results.select { |pos|  on_board?(pos) && legal_move?(pos) }
   end
 end
 
@@ -106,7 +109,7 @@ class SlidingPiece < Piece
             [-1, 1]
           ]
 
-  def valid_moves
+  def moves
     results = []
 
     results += generate_moves(DIAGONAL_STEPS) if @slide_dirs.include?(:diagonal)
@@ -124,7 +127,6 @@ class SlidingPiece < Piece
         current_pos = [current_pos[0] + delta[0], current_pos[1] + delta[1]]
         break if !on_board?(current_pos)
         break if @board.occupied_by_friend?(@color, current_pos)
-        break if move_into_check?(current_pos)
 
         results << current_pos
         break if @board.occupied_by_enemy?(@color, current_pos)
@@ -171,7 +173,7 @@ class Pawn < Piece
     @display = '♟'.send(@color)
   end
 
-  def valid_moves
+  def moves
     get_steps + get_attacks
   end
 
@@ -180,9 +182,9 @@ class Pawn < Piece
 
     results = []
     poss_move = [2 * direction + @pos.first, 0 + @pos.last]
-    results << poss_move if on_board?(poss_move) && !@board.occupied?(poss_move) && !@moved && !move_into_check?(pos)
+    results << poss_move if on_board?(poss_move) && !@board.occupied?(poss_move) && !@moved
     poss_move = [1 * direction + @pos.first, 0 + @pos.last]
-    results << poss_move if on_board?(poss_move) && !@board.occupied?(poss_move) && !move_into_check?(pos)
+    results << poss_move if on_board?(poss_move) && !@board.occupied?(poss_move)
 
     results
   end
