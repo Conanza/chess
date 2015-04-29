@@ -27,15 +27,18 @@ class Piece
   end
 
   def legal_move?(pos)
-    @board[pos] == nil || @board[pos].color != @color
+    @board[pos].nil? || @board[pos].color != @color
+  end
+
+  def move_into_check?
   end
 end
 
 
 class SteppingPiece < Piece
   def valid_moves
-    results = deltas.map { |delta| [delta[0] + @pos[0] ,delta[1] + @pos[1]] }
-    results.select { |pos| legal_move?(pos) && on_board?(pos) }
+    results = deltas.map { |delta| [delta[0] + @pos[0], delta[1] + @pos[1]] }
+    results.select { |pos|  on_board?(pos) && legal_move?(pos) }
   end
 end
 
@@ -73,7 +76,6 @@ class Knight < SteppingPiece
     [ 2, -1],
     [ 2,  1]
   ]
-
 
   def initialize(color, pos, board)
     super
@@ -173,9 +175,9 @@ class Pawn < Piece
 
     results = []
     poss_move = [2 * direction + @pos.first, 0 + @pos.last]
-    results << poss_move if !@board.occupied?(poss_move) && !@moved
+    results << poss_move if on_board?(poss_move) && !@board.occupied?(poss_move) && !@moved
     poss_move = [1 * direction + @pos.first, 0 + @pos.last]
-    results << poss_move unless @board.occupied?(poss_move)
+    results << poss_move if on_board?(poss_move) && !@board.occupied?(poss_move)
 
     results
   end
@@ -187,6 +189,6 @@ class Pawn < Piece
       [attack[0] * direction + pos[0], attack[1] + pos[1]]
     end
 
-    poss_attacks.select { |pos| @board.occupied_by_enemy?(@color, pos) }
+    poss_attacks.select { |pos| on_board?(pos) && @board.occupied_by_enemy?(@color, pos) }
   end
 end

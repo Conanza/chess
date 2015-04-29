@@ -1,12 +1,13 @@
 require "colorize"
 require_relative 'piece'
+require "byebug"
 
 class Board
   BASE_ROW = [Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook]
 
   def initialize
     @board = Array.new(8) { Array.new(8) { nil } }
-    #setup_board
+    setup_board
   end
 
   def display
@@ -28,6 +29,12 @@ class Board
 
     8.times { |idx| @board[1][idx] = Pawn.new(:black, [1, idx], self) }
     8.times { |idx| @board[6][idx] = Pawn.new(:white, [6, idx], self) }
+
+
+  end
+
+  def board_each(&prc)
+
   end
 
   def [](pos)
@@ -65,7 +72,22 @@ class Board
 
   end
 
+  def where_is_my_king(color)
+    @board.each do |row|
+      row.each do |tile|
+        return tile if tile.is_a?(King) && tile.color == color
+      end
+    end
+  end
+
   def check?(color)
+    king_pos = where_is_my_king(color).pos
+
+    @board.each_with_index do |row, i|
+      row.each_with_index do |tile, j|
+        return true if tile.is_a?(Piece) && tile.valid_moves.include?(king_pos)
+      end
+    end
     false
   end
 
@@ -112,26 +134,30 @@ class Board
 end
 
 b = Board.new
-
-5.times { |i| b[[i,i]] = Pawn.new(:white, [i,i], b)}
-
-
 b.display
-p b[[4,4]].valid_moves
-p b.object_id
-
-
-puts
-d = b.deep_dup
-
-d[[3,5]] = Pawn.new(:black, [4,6], d)
-d.display
-p d[[4,4]].valid_moves
-p d.object_id
-puts
-
-p b[[4,4]].valid_moves
-p d[[4,4]].valid_moves
-
-d.move([4,4],[3,3])
-d.display
+b[[5,3]] = Knight.new(:black, [5,3], b)
+b.display
+p b.check?(:white)
+# p b[[7,4]].valid_moves
+# 5.times { |i| b[[i,i]] = Pawn.new(:white, [i,i], b)}
+#
+#
+# b.display
+# p b[[4,4]].valid_moves
+# p b.object_id
+#
+#
+# puts
+# d = b.deep_dup
+#
+# d[[3,5]] = Pawn.new(:black, [4,6], d)
+# d.display
+# p d[[4,4]].valid_moves
+# p d.object_id
+# puts
+#
+# p b[[4,4]].valid_moves
+# p d[[4,4]].valid_moves
+#
+# d.move([4,4],[3,3])
+# d.display
