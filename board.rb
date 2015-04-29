@@ -8,7 +8,7 @@ class Board
   COLUMN_BORDER = [' 8 ', ' 7 ', ' 6 ', ' 5 ', ' 4 ', ' 3 ', ' 2 ', ' 1 ']
 
   def initialize(should_setup = true)
-    @board = Array.new(8) { Array.new(8) { nil } }
+    @board = Array.new(8) { Array.new(8) }
     setup_board if should_setup
   end
 
@@ -44,6 +44,7 @@ class Board
 
   def [](pos)
     row, col = pos
+
     @board[row][col]
   end
 
@@ -95,8 +96,8 @@ class Board
     new_board
   end
 
+  #whatever calls this should be damn ready to catch and InvalidMoveError
   def move(start_pos, end_pos)
-    #whatever calls this should be damn ready to catch and InvalidMoveError
     piece = self[start_pos]
     if piece.valid_moves.include?(end_pos)
       move!(start_pos, end_pos)
@@ -115,13 +116,13 @@ class Board
   end
 end
 
-b = Board.new(false)
-b[[0,0]] = King.new(:white, [0,0], b)
-b[[4,7]] = King.new(:black, [4,7], b)
-b[[6,1]] = Rook.new(:black, [6,1], b)
-b[[7,0]] = Rook.new(:black, [7,0], b)
-b[[7,4]] = Rook.new(:white, [7,4], b)
-b.display
+# b = Board.new(false)
+# b[[0,0]] = King.new(:white, [0,0], b)
+# b[[4,7]] = King.new(:black, [4,7], b)
+# b[[6,1]] = Rook.new(:black, [6,1], b)
+# b[[7,0]] = Rook.new(:black, [7,0], b)
+# b[[7,4]] = Rook.new(:white, [7,4], b)
+# b.display
 # puts "Added A Knight"
 # p b.check?(:white)
 # p b.checkmate?(:white)

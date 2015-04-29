@@ -1,5 +1,3 @@
-require 'byebug'
-
 class InvalidMoveError < StandardError
   def message
     'Invalid move.'
@@ -96,11 +94,12 @@ class Knight < SteppingPiece
 end
 
 class SlidingPiece < Piece
-  CARDINAL_STEPS = [[1, 0],
-                    [-1, 0],
-                    [0, 1],
-                    [0, -1]
-                  ]
+  CARDINAL_STEPS = [
+    [1, 0],
+    [-1, 0],
+    [0, 1],
+    [0, -1]
+  ]
 
   DIAGONAL_STEPS = [           # REFORMAT
             [1, 1],
