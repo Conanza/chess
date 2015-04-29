@@ -4,6 +4,8 @@ require "byebug"
 
 class Board
   BASE_ROW = [Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook]
+  ROW_BORDER = "    A  B  C  D  E  F  G  H    "
+  COLUMN_BORDER = [' 8 ', ' 7 ', ' 6 ', ' 5 ', ' 4 ', ' 3 ', ' 2 ', ' 1 ']
 
   def initialize(should_setup = true)
     @board = Array.new(8) { Array.new(8) { nil } }
@@ -11,14 +13,23 @@ class Board
   end
 
   def display
+    puts ROW_BORDER.white.on_black
     @board.each_with_index do |row, i|
-      display_string = ""
+      # background = i.even? ? :on_yellow: :on_yellow
+      # border = COLUMN_BORDER[i].red.send(background)
+      border = COLUMN_BORDER[i].white.on_black
+      display_string = border
       row.each_with_index do |space, j|
         color = (i + j).even? ? :on_blue : :on_magenta
-        space.nil? ? display_string += '  '.send(color) : display_string += "#{space.display} ".send(color)
+        space.nil? ? display_string += '   '.send(color) : display_string += " #{space.display} ".send(color)
       end
-      puts "#{display_string}\n"
+      puts "#{display_string + border}"
     end
+    puts ROW_BORDER.white.on_black
+  end
+
+  def border_string
+
   end
 
   def setup_board
@@ -111,6 +122,6 @@ b[[6,1]] = Rook.new(:black, [6,1], b)
 b[[7,0]] = Rook.new(:black, [7,0], b)
 b[[7,4]] = Rook.new(:white, [7,4], b)
 b.display
-puts "Added A Knight"
-p b.check?(:white)
-p b.checkmate?(:white)
+# puts "Added A Knight"
+# p b.check?(:white)
+# p b.checkmate?(:white)
