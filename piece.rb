@@ -30,7 +30,11 @@ class Piece
     @board[pos].nil? || @board[pos].color != @color
   end
 
-  def move_into_check?
+  def move_into_check?(pos)
+    new_board = deep_dup
+    new_board.move!(@pos, pos)
+    return true if new_board.check?(@color)
+    false
   end
 end
 
@@ -38,7 +42,7 @@ end
 class SteppingPiece < Piece
   def valid_moves
     results = deltas.map { |delta| [delta[0] + @pos[0], delta[1] + @pos[1]] }
-    results.select { |pos|  on_board?(pos) && legal_move?(pos) }
+    results.select { |pos|  on_board?(pos) && legal_move?(pos) && !move_into_check?(pos) }
   end
 end
 
@@ -118,8 +122,9 @@ class SlidingPiece < Piece
       current_pos = @pos
       loop do
         current_pos = [current_pos[0] + delta[0], current_pos[1] + delta[1]]
-        break unless on_board?(current_pos)
+        break if !on_board?(current_pos)
         break if @board.occupied_by_friend?(@color, current_pos)
+        break if move_into_check?(current_pos)
 
         results << current_pos
         break if @board.occupied_by_enemy?(@color, current_pos)
@@ -175,9 +180,9 @@ class Pawn < Piece
 
     results = []
     poss_move = [2 * direction + @pos.first, 0 + @pos.last]
-    results << poss_move if on_board?(poss_move) && !@board.occupied?(poss_move) && !@moved
+    results << poss_move if on_board?(poss_move) && !@board.occupied?(poss_move) && !@moved && !move_into_check?(pos)
     poss_move = [1 * direction + @pos.first, 0 + @pos.last]
-    results << poss_move if on_board?(poss_move) && !@board.occupied?(poss_move)
+    results << poss_move if on_board?(poss_move) && !@board.occupied?(poss_move) && !move_into_check?(pos)
 
     results
   end

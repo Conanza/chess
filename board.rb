@@ -113,9 +113,9 @@ class Board
     #whatever calls this should be damn ready to catch and InvalidMoveError
     piece = self[start_pos]
 
-    if piece.valid_moves.include?(end_pos)
-      new_board = deep_dup
-      new_board.move!(start_pos, end_pos)
+    # if piece.valid_moves.include?(end_pos)
+    #   new_board = deep_dup
+    #   new_board.move!(start_pos, end_pos)
       if !new_board.check?(piece.color)
         move!(start_pos, end_pos)
       end
