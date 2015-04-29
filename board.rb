@@ -6,7 +6,7 @@ class Board
 
   def initialize
     @board = Array.new(8) { Array.new(8) { nil } }
-    setup_board
+    #setup_board
   end
 
   def display
@@ -66,38 +66,72 @@ class Board
   end
 
   def check?(color)
-
+    false
   end
 
   def deep_dup
+    new_board = Board.new
 
+    @board.each_with_index do |row, i|
+      row.each_with_index do |tile, j|
+        if !tile.nil?
+          piece_type = tile.class
+          position = tile.pos
+          color = tile.color
+          tile_copy = piece_type.new(color, position, new_board)
+          new_board[[i, j]] = tile_copy
+        end
+      end
+    end
+
+    new_board
+  end
+
+  def move(start_pos, end_pos)
+    #whatever calls this should be damn ready to catch and InvalidMoveError
+    piece = self[start_pos]
+
+    if piece.valid_moves.include?(end_pos)
+      new_board = deep_dup
+      new_board.move!(start_pos, end_pos)
+      if !new_board.check?(piece.color)
+        move!(start_pos, end_pos)
+      end
+    else
+      raise InvalidMoveError
+    end
+  end
+
+  def move!(start_pos, end_pos)
+    piece = self[start_pos]
+
+    self[start_pos] = nil
+    piece.pos = end_pos
+    self[end_pos] = piece
   end
 end
 
 b = Board.new
+
+5.times { |i| b[[i,i]] = Pawn.new(:white, [i,i], b)}
+
+
 b.display
+p b[[4,4]].valid_moves
+p b.object_id
 
 
+puts
+d = b.deep_dup
 
-# b[[2, 0]] = King.new(:black, [2, 0], b)
-# b[[5, 5]] = King.new(:white, [5, 5], b)
-#
-# b[pos] = Queen.new(:black, pos, b)
-# # p b[pos].valid_moves
-#
-# b[[2,2]] = Pawn.new(:white, [2,2], b)
-# p b[[2,2]].valid_moves
-# b.display
-# k = King.new(:w, [4,4], b)
-# b[[1,1]]
-#
-#
-# k.move([5,5])
-# puts
-# b.display
-# k.move([3, 3])
-# puts
-# b.display
-#
-# puts "I am a string!".on_red
-# k.valid_moves
+d[[3,5]] = Pawn.new(:black, [4,6], d)
+d.display
+p d[[4,4]].valid_moves
+p d.object_id
+puts
+
+p b[[4,4]].valid_moves
+p d[[4,4]].valid_moves
+
+d.move([4,4],[3,3])
+d.display

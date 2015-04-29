@@ -15,16 +15,6 @@ class Piece
     @moved = false
   end
 
-  def move(destination)
-    # if valid_moves.include?(destination)
-      @board[@pos] = nil
-      @pos = destination
-      @board[destination] = self
-    # else
-    #   raise InvalidMoveError
-    # end
-  end
-
   def valid_moves
     # This Applies To All Pieces
     # You can't have a piece between you and the destination.
