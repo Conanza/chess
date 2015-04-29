@@ -2,8 +2,11 @@ require "colorize"
 require_relative 'piece'
 
 class Board
+  BASE_ROW = [Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook]
+
   def initialize
     @board = Array.new(8) { Array.new(8) { nil } }
+    #setup_board
   end
 
   def display
@@ -17,15 +20,15 @@ class Board
     end
   end
 
-  # def self.setup_board
-  #   row_of_pawns = [pawns, pawns]
-  #   other_row
-  #
-  #
-  #   @board[1] = row_of_pawns
-  #
-  #
-  # end
+  def setup_board
+    BASE_ROW.each_with_index do |piece, idx|
+      @board[0][idx] = piece.new(:black, [0, idx], self)
+      @board[7][idx] = piece.new(:white, [7, idx], self)
+    end
+
+    8.times { |idx| @board[1][idx] = Pawn.new(:black, [1, idx], self) }
+    8.times { |idx| @board[6][idx] = Pawn.new(:white, [6, idx], self) }
+  end
 
   def [](pos)
     row, col = pos
@@ -72,16 +75,19 @@ class Board
 end
 
 b = Board.new
-pos = [1,1]
-b[[2, 0]] = King.new(:black, [2, 0], b)
-b[[5, 5]] = King.new(:white, [5, 5], b)
-
-b[pos] = Queen.new(:black, pos, b)
-# p b[pos].valid_moves
-
-b[[2,2]] = Pawn.new(:white, [2,2], b)
-p b[[2,2]].valid_moves
 b.display
+
+b.setup_board
+b.display
+# b[[2, 0]] = King.new(:black, [2, 0], b)
+# b[[5, 5]] = King.new(:white, [5, 5], b)
+#
+# b[pos] = Queen.new(:black, pos, b)
+# # p b[pos].valid_moves
+#
+# b[[2,2]] = Pawn.new(:white, [2,2], b)
+# p b[[2,2]].valid_moves
+# b.display
 # k = King.new(:w, [4,4], b)
 # b[[1,1]]
 #
