@@ -6,7 +6,7 @@ class Board
 
   def initialize
     @board = Array.new(8) { Array.new(8) { nil } }
-    #setup_board
+    setup_board
   end
 
   def display
@@ -77,8 +77,8 @@ end
 b = Board.new
 b.display
 
-b.setup_board
-b.display
+
+
 # b[[2, 0]] = King.new(:black, [2, 0], b)
 # b[[5, 5]] = King.new(:white, [5, 5], b)
 #
