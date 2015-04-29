@@ -13,30 +13,32 @@ class Piece
     @moved = false
   end
 
-  def valid_moves
-    moves.select { |pos| !move_into_check?(pos) }
-  end
-
-  def on_board?(pos)
-    pos[0].between?(0, 7) && pos[1].between?(0, 7)
-  end
-
-  def legal_move?(pos)
-    @board[pos].nil? || @board[pos].color != @color
-  end
-
-  def move_into_check?(pos)
-    new_board = @board.deep_dup
-    new_board.move!(@pos, pos)
-    new_board.check?(@color)
-  end
-
   def dup(new_board)
     piece_type = self.class
     position = @pos.dup
     color = @color
     piece_type.new(color, position, new_board)
   end
+
+  def valid_moves
+    moves.select { |pos| !move_into_check?(pos) }
+  end
+
+  private
+
+    def legal_move?(pos)
+      @board[pos].nil? || @board[pos].color != @color
+    end
+
+    def move_into_check?(pos)
+      new_board = @board.deep_dup
+      new_board.move!(@pos, pos)
+      new_board.check?(@color)
+    end
+
+    def on_board?(pos)
+      pos[0].between?(0, 7) && pos[1].between?(0, 7)
+    end
 end
 
 
@@ -117,23 +119,25 @@ class SlidingPiece < Piece
     results
   end
 
-  def generate_moves(deltas)
-    results = []
+  private
 
-    deltas.each do |delta|
-      current_pos = @pos
-      loop do
-        current_pos = [current_pos[0] + delta[0], current_pos[1] + delta[1]]
-        break if !on_board?(current_pos)
-        break if @board.occupied_by_friend?(@color, current_pos)
+    def generate_moves(deltas)
+      results = []
 
-        results << current_pos
-        break if @board.occupied_by_enemy?(@color, current_pos)
+      deltas.each do |delta|
+        current_pos = @pos
+        loop do
+          current_pos = [current_pos[0] + delta[0], current_pos[1] + delta[1]]
+          break if !on_board?(current_pos)
+          break if @board.occupied_by_friend?(@color, current_pos)
+
+          results << current_pos
+          break if @board.occupied_by_enemy?(@color, current_pos)
+        end
       end
-    end
 
-    results
-  end
+      results
+    end
 end
 
 class Rook < SlidingPiece
@@ -176,25 +180,27 @@ class Pawn < Piece
     get_steps + get_attacks
   end
 
-  def get_steps
-    direction = color == :black ? 1 : -1
+  private
 
-    results = []
-    poss_move = [2 * direction + @pos.first, 0 + @pos.last]
-    results << poss_move if !@moved && on_board?(poss_move) && !@board.occupied?(poss_move)
-    poss_move = [1 * direction + @pos.first, 0 + @pos.last]
-    results << poss_move if on_board?(poss_move) && !@board.occupied?(poss_move)
+    def get_attacks
+      direction = color == :black ? 1 : -1
 
-    results
-  end
+      poss_attacks = ATTACKS.map do |attack|
+        [attack[0] * direction + pos[0], attack[1] + pos[1]]
+      end
 
-  def get_attacks
-    direction = color == :black ? 1 : -1
-
-    poss_attacks = ATTACKS.map do |attack|
-      [attack[0] * direction + pos[0], attack[1] + pos[1]]
+      poss_attacks.select { |pos| on_board?(pos) && @board.occupied_by_enemy?(@color, pos) }
     end
 
-    poss_attacks.select { |pos| on_board?(pos) && @board.occupied_by_enemy?(@color, pos) }
-  end
+    def get_steps
+      direction = color == :black ? 1 : -1
+
+      results = []
+      poss_move = [2 * direction + @pos.first, 0 + @pos.last]
+      results << poss_move if !@moved && on_board?(poss_move) && !@board.occupied?(poss_move)
+      poss_move = [1 * direction + @pos.first, 0 + @pos.last]
+      results << poss_move if on_board?(poss_move) && !@board.occupied?(poss_move)
+
+      results
+    end
 end

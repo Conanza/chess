@@ -3,6 +3,9 @@ require_relative 'board.rb'
 class InvalidGuessError < StandardError
 end
 
+class NoPieceError < StandardError
+end
+
 class WrongColorError < StandardError
 end
 
@@ -19,10 +22,13 @@ class Game
       puts "#{current_color}, please make your move."
       begin
         start_pos, end_pos = @current_player.get_move
-        if @board[start_pos].color != @current_player.color
-          raise WrongColorError.new #so we don't need the new?
-        end
+        raise NoPieceError if @board[start_pos].nil?
+        raise WrongColorError if @board[start_pos].color != @current_player.color
+
         @board.move(start_pos, end_pos)
+      rescue NoPieceError
+        puts "That square does not contain a piece."
+        retry
       rescue WrongColorError
         puts "You may only move #{current_color} pieces."
         retry
@@ -39,28 +45,29 @@ class Game
     puts "Game Over. #{current_color} won!"
   end
 
-  def switch_current_player
-    @current_player = @current_player == @player1 ? @player2 : @player1
-  end
+  private
 
-  def current_color
-    @current_player.color.to_s.capitalize
-  end
+    def current_color
+      @current_player.color.to_s.capitalize
+    end
+
+    def switch_current_player
+      @current_player = @current_player == @player1 ? @player2 : @player1
+    end
 end
 
-class Player
-  attr_reader :color
+class HumanPlayer
+  COLUMN_HASH = {
+    'a' => 0,
+    'b' => 1,
+    'c' => 2,
+    'd' => 3,
+    'e' => 4,
+    'f' => 5,
+    'g' => 6,
+    'h' => 7
+  }
 
-  def initialize(color)
-    @color = color
-  end
-
-  def get_move()
-
-  end
-end
-
-class HumanPlayer < Player
   ROW_HASH = {
     '8' => 0,
     '7' => 1,
@@ -72,16 +79,11 @@ class HumanPlayer < Player
     '1' => 7
   }
 
-  COLUMN_HASH = {
-    'a' => 0,
-    'b' => 1,
-    'c' => 2,
-    'd' => 3,
-    'e' => 4,
-    'f' => 5,
-    'g' => 6,
-    'h' => 7
-  }
+  attr_reader :color
+
+  def initialize(color)
+    @color = color
+  end
 
   def get_move
     begin
@@ -96,23 +98,23 @@ class HumanPlayer < Player
     parse_input(input)
   end
 
-  def parse_input(input)
-    start, fin = input.split
-    [
-      [to_row(start[1]), to_column(start[0])],
-      [to_row(fin[1]), to_column(fin[0])]
-    ]
-  end
+  private
 
-  def to_row(char)
-    ROW_HASH[char]
-  end
+    def parse_input(input)
+      start, fin = input.split
+      [
+        [to_row(start[1]), to_column(start[0])],
+        [to_row(fin[1]), to_column(fin[0])]
+      ]
+    end
 
-  def to_column(char)
-    COLUMN_HASH[char]
-  end
+    def to_column(char)
+      COLUMN_HASH[char]
+    end
 
-
+    def to_row(char)
+      ROW_HASH[char]
+    end
 end
 
 chess = Game.new(HumanPlayer.new(:white), HumanPlayer.new(:black))

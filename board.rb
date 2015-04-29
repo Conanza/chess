@@ -4,12 +4,41 @@ require "byebug"
 
 class Board
   BASE_ROW = [Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook]
-  ROW_BORDER = "    A  B  C  D  E  F  G  H    "
   COLUMN_BORDER = [' 8 ', ' 7 ', ' 6 ', ' 5 ', ' 4 ', ' 3 ', ' 2 ', ' 1 ']
+  ROW_BORDER = "    A  B  C  D  E  F  G  H    "
 
   def initialize(should_setup = true)
     @board = Array.new(8) { Array.new(8) }
     setup_board if should_setup
+  end
+
+  def [](pos)
+    row, col = pos
+
+    @board[row][col]
+  end
+
+  def []=(pos, value)
+    row, col = pos
+
+    @board[row][col] = value
+  end
+
+  def check?(color)
+    king_pos = my_king(color).pos
+    pieces.any? { |piece| piece.moves.include?(king_pos) }
+    #return true if tile.is_a?(Piece) && tile.valid_moves.include?(king_pos)
+  end
+
+  def checkmate?(color)
+    check?(color) && pieces_of(color).all? { |piece| piece.valid_moves.empty? }
+  end
+
+  def deep_dup
+    new_board = Board.new(false)
+    pieces.each { |piece| new_board[piece.pos] = piece.dup(new_board) }
+
+    new_board
   end
 
   def display
@@ -28,70 +57,6 @@ class Board
     puts ROW_BORDER.white.on_black
   end
 
-  def setup_board
-    BASE_ROW.each_with_index do |piece, idx|
-      @board[0][idx] = piece.new(:black, [0, idx], self)
-      @board[7][idx] = piece.new(:white, [7, idx], self)
-    end
-
-    8.times { |idx| @board[1][idx] = Pawn.new(:black, [1, idx], self) }
-    8.times { |idx| @board[6][idx] = Pawn.new(:white, [6, idx], self) }
-  end
-
-  def [](pos)
-    row, col = pos
-
-    @board[row][col]
-  end
-
-  def []=(pos, value)
-    row, col = pos
-
-    @board[row][col] = value
-  end
-
-  def pieces_of(color)
-    pieces.select { |piece| piece.color == color }
-  end
-
-  def pieces
-    @board.flatten.compact
-  end
-
-  def occupied?(pos)
-    !self[pos].nil?
-  end
-
-  def occupied_by_friend?(my_color, pos)
-    occupied?(pos) && self[pos].color == my_color
-  end
-
-  def occupied_by_enemy?(my_color, pos)
-    occupied?(pos) && self[pos].color != my_color
-  end
-
-  def checkmate?(color)
-    check?(color) && pieces_of(color).all? { |piece| piece.valid_moves.empty? }
-  end
-
-  def my_king(color)
-    pieces_of(color).find { |piece| piece.is_a?(King) }
-  end
-
-  def check?(color)
-    king_pos = my_king(color).pos
-    pieces.any? { |piece| piece.moves.include?(king_pos) }
-    #return true if tile.is_a?(Piece) && tile.valid_moves.include?(king_pos)
-  end
-
-  def deep_dup
-    new_board = Board.new(false)
-    pieces.each { |piece| new_board[piece.pos] = piece.dup(new_board) }
-
-    new_board
-  end
-
-  #whatever calls this should be damn ready to catch and InvalidMoveError
   def move(start_pos, end_pos)
     piece = self[start_pos]
     if piece.valid_moves.include?(end_pos)
@@ -109,15 +74,40 @@ class Board
     piece.pos = end_pos
     self[end_pos] = piece
   end
-end
 
-# b = Board.new(false)
-# b[[0,0]] = King.new(:white, [0,0], b)
-# b[[4,7]] = King.new(:black, [4,7], b)
-# b[[6,1]] = Rook.new(:black, [6,1], b)
-# b[[7,0]] = Rook.new(:black, [7,0], b)
-# b[[7,4]] = Rook.new(:white, [7,4], b)
-# b.display
-# puts "Added A Knight"
-# p b.check?(:white)
-# p b.checkmate?(:white)
+  def occupied?(pos)
+    !self[pos].nil?
+  end
+
+  def occupied_by_enemy?(my_color, pos)
+    occupied?(pos) && self[pos].color != my_color
+  end
+
+  def occupied_by_friend?(my_color, pos)
+    occupied?(pos) && self[pos].color == my_color
+  end
+
+  private
+
+    def my_king(color)
+      pieces_of(color).find { |piece| piece.is_a?(King) }
+    end
+
+    def pieces
+      @board.flatten.compact
+    end
+
+    def pieces_of(color)
+      pieces.select { |piece| piece.color == color }
+    end
+
+    def setup_board
+      BASE_ROW.each_with_index do |piece, idx|
+        @board[0][idx] = piece.new(:black, [0, idx], self)
+        @board[7][idx] = piece.new(:white, [7, idx], self)
+      end
+
+      8.times { |idx| @board[1][idx] = Pawn.new(:black, [1, idx], self) }
+      8.times { |idx| @board[6][idx] = Pawn.new(:white, [6, idx], self) }
+    end
+end
