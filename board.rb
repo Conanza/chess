@@ -59,7 +59,7 @@ class Board
       display_string = border
       row.each_with_index do |space, j|
         color = (i + j).even? ? :on_cyan : :on_magenta
-        color = :on_green if green_squares.include?([i, j])
+        color = (i + j).even? ? :on_yellow : :on_green if green_squares.include?([i, j])
         color = :on_yellow if [i, j] == @cursor
         space.nil? ? display_string += '   '.send(color) : display_string += " #{space.display} ".send(color)
       end
