@@ -1,0 +1,353 @@
+--- !ruby/object:Game
+board: &1 !ruby/object:Board
+  board:
+  - - !ruby/object:Rook
+      board: *1
+      pos:
+      - 0
+      - 0
+      color: :black
+      moved: false
+      symbol: :Rook
+      display: "\e[0;30;49m♜\e[0m"
+      slide_dirs:
+      - :cardinal
+    - !ruby/object:Knight
+      board: *1
+      pos:
+      - 0
+      - 1
+      color: :black
+      moved: false
+      symbol: :Knight
+      display: "\e[0;30;49m♞\e[0m"
+    - !ruby/object:Bishop
+      board: *1
+      pos:
+      - 0
+      - 2
+      color: :black
+      moved: false
+      symbol: :Bishop
+      display: "\e[0;30;49m♝\e[0m"
+      slide_dirs:
+      - :diagonal
+    - !ruby/object:Queen
+      board: *1
+      pos:
+      - 0
+      - 3
+      color: :black
+      moved: false
+      symbol: :Queen
+      display: "\e[0;30;49m♛\e[0m"
+      slide_dirs:
+      - :cardinal
+      - :diagonal
+    - !ruby/object:King
+      board: *1
+      pos:
+      - 0
+      - 4
+      color: :black
+      moved: false
+      symbol: :King
+      display: "\e[0;30;49m♚\e[0m"
+    - !ruby/object:Bishop
+      board: *1
+      pos:
+      - 0
+      - 5
+      color: :black
+      moved: false
+      symbol: :Bishop
+      display: "\e[0;30;49m♝\e[0m"
+      slide_dirs:
+      - :diagonal
+    - !ruby/object:Knight
+      board: *1
+      pos:
+      - 0
+      - 6
+      color: :black
+      moved: false
+      symbol: :Knight
+      display: "\e[0;30;49m♞\e[0m"
+    - !ruby/object:Rook
+      board: *1
+      pos:
+      - 0
+      - 7
+      color: :black
+      moved: false
+      symbol: :Rook
+      display: "\e[0;30;49m♜\e[0m"
+      slide_dirs:
+      - :cardinal
+  - - !ruby/object:Pawn
+      board: *1
+      pos:
+      - 1
+      - 0
+      color: :black
+      moved: false
+      symbol: :Pawn
+      display: "\e[0;30;49m♟\e[0m"
+    - !ruby/object:Pawn
+      board: *1
+      pos:
+      - 1
+      - 1
+      color: :black
+      moved: false
+      symbol: :Pawn
+      display: "\e[0;30;49m♟\e[0m"
+    - !ruby/object:Pawn
+      board: *1
+      pos:
+      - 1
+      - 2
+      color: :black
+      moved: false
+      symbol: :Pawn
+      display: "\e[0;30;49m♟\e[0m"
+    - 
+    - !ruby/object:Pawn
+      board: *1
+      pos:
+      - 1
+      - 4
+      color: :black
+      moved: false
+      symbol: :Pawn
+      display: "\e[0;30;49m♟\e[0m"
+    - !ruby/object:Pawn
+      board: *1
+      pos:
+      - 1
+      - 5
+      color: :black
+      moved: false
+      symbol: :Pawn
+      display: "\e[0;30;49m♟\e[0m"
+    - !ruby/object:Pawn
+      board: *1
+      pos:
+      - 1
+      - 6
+      color: :black
+      moved: false
+      symbol: :Pawn
+      display: "\e[0;30;49m♟\e[0m"
+    - !ruby/object:Pawn
+      board: *1
+      pos:
+      - 1
+      - 7
+      color: :black
+      moved: false
+      symbol: :Pawn
+      display: "\e[0;30;49m♟\e[0m"
+  - - 
+    - 
+    - 
+    - 
+    - 
+    - 
+    - 
+    - 
+  - - 
+    - 
+    - 
+    - 
+    - !ruby/object:Pawn
+      board: *1
+      pos:
+      - 3
+      - 4
+      color: :black
+      moved: true
+      symbol: :Pawn
+      display: "\e[0;30;49m♟\e[0m"
+    - 
+    - 
+    - 
+  - - 
+    - 
+    - 
+    - 
+    - 
+    - 
+    - !ruby/object:Queen
+      board: *1
+      pos: &2
+      - 4
+      - 6
+      color: :white
+      moved: true
+      symbol: :Queen
+      display: "\e[0;37;49m♛\e[0m"
+      slide_dirs:
+      - :cardinal
+      - :diagonal
+    - 
+  - - 
+    - 
+    - 
+    - 
+    - 
+    - 
+    - 
+    - 
+  - - !ruby/object:Pawn
+      board: *1
+      pos:
+      - 6
+      - 0
+      color: :white
+      moved: false
+      symbol: :Pawn
+      display: "\e[0;37;49m♟\e[0m"
+    - !ruby/object:Pawn
+      board: *1
+      pos:
+      - 6
+      - 1
+      color: :white
+      moved: false
+      symbol: :Pawn
+      display: "\e[0;37;49m♟\e[0m"
+    - !ruby/object:Pawn
+      board: *1
+      pos:
+      - 6
+      - 2
+      color: :white
+      moved: false
+      symbol: :Pawn
+      display: "\e[0;37;49m♟\e[0m"
+    - !ruby/object:Pawn
+      board: *1
+      pos:
+      - 6
+      - 3
+      color: :white
+      moved: false
+      symbol: :Pawn
+      display: "\e[0;37;49m♟\e[0m"
+    - 
+    - !ruby/object:Pawn
+      board: *1
+      pos:
+      - 6
+      - 5
+      color: :white
+      moved: false
+      symbol: :Pawn
+      display: "\e[0;37;49m♟\e[0m"
+    - !ruby/object:Pawn
+      board: *1
+      pos:
+      - 6
+      - 6
+      color: :white
+      moved: false
+      symbol: :Pawn
+      display: "\e[0;37;49m♟\e[0m"
+    - !ruby/object:Pawn
+      board: *1
+      pos:
+      - 6
+      - 7
+      color: :white
+      moved: false
+      symbol: :Pawn
+      display: "\e[0;37;49m♟\e[0m"
+  - - !ruby/object:Rook
+      board: *1
+      pos:
+      - 7
+      - 0
+      color: :white
+      moved: false
+      symbol: :Rook
+      display: "\e[0;37;49m♜\e[0m"
+      slide_dirs:
+      - :cardinal
+    - !ruby/object:Knight
+      board: *1
+      pos:
+      - 7
+      - 1
+      color: :white
+      moved: false
+      symbol: :Knight
+      display: "\e[0;37;49m♞\e[0m"
+    - !ruby/object:Bishop
+      board: *1
+      pos:
+      - 7
+      - 2
+      color: :white
+      moved: false
+      symbol: :Bishop
+      display: "\e[0;37;49m♝\e[0m"
+      slide_dirs:
+      - :diagonal
+    - 
+    - !ruby/object:King
+      board: *1
+      pos:
+      - 7
+      - 4
+      color: :white
+      moved: false
+      symbol: :King
+      display: "\e[0;37;49m♚\e[0m"
+    - !ruby/object:Bishop
+      board: *1
+      pos:
+      - 7
+      - 5
+      color: :white
+      moved: false
+      symbol: :Bishop
+      display: "\e[0;37;49m♝\e[0m"
+      slide_dirs:
+      - :diagonal
+    - !ruby/object:Knight
+      board: *1
+      pos:
+      - 7
+      - 6
+      color: :white
+      moved: false
+      symbol: :Knight
+      display: "\e[0;37;49m♞\e[0m"
+    - !ruby/object:Rook
+      board: *1
+      pos:
+      - 7
+      - 7
+      color: :white
+      moved: false
+      symbol: :Rook
+      display: "\e[0;37;49m♜\e[0m"
+      slide_dirs:
+      - :cardinal
+  cursor:
+  - 4
+  - 6
+player1: !ruby/object:HumanPlayer
+  color: :white
+  board: *1
+  end_pos: *2
+  start_pos:
+  - 7
+  - 3
+player2: &3 !ruby/object:HumanPlayer
+  color: :black
+  board: *1
+  end_pos: also save
+  start_pos: save
+current_player: *3

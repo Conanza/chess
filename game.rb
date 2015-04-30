@@ -1,4 +1,6 @@
 require_relative 'board.rb'
+require_relative 'keypress.rb'
+require "yaml"
 
 class InvalidGuessError < StandardError
 end
@@ -12,16 +14,30 @@ end
 class Game
   def initialize(player1, player2)
     @board = Board.new
-    @player1, @player2 = player1, player2
-    @current_player = player1
+    @player1 = player1.new(:white, @board)
+    @player2 = player2.new(:black, @board)
+    @current_player = @player1
   end
 
   def play
+    system("clear")
     @board.display
     until @board.checkmate?(@current_player.color)
       puts "#{current_color}, please make your move."
       begin
         start_pos, end_pos = @current_player.get_move
+
+        if start_pos == "save"
+          system "clear"
+          puts "You just saved the game. Come back later!"
+
+          File.open("chess_game.yml", "w") do |f|
+            f.puts(self.to_yaml)
+          end
+
+          exit 0
+        end
+
         raise NoPieceError if @board[start_pos].nil?
         raise WrongColorError if @board[start_pos].color != @current_player.color
 
@@ -37,6 +53,7 @@ class Game
         retry
       end
 
+      system("Clear")
       switch_current_player
       @board.display
     end
@@ -81,21 +98,54 @@ class HumanPlayer
 
   attr_reader :color
 
-  def initialize(color)
+  def initialize(color, board)
     @color = color
+    @board = board
   end
 
+  # def get_move_o
+  #   begin
+  #     input = gets.downcase.chomp
+  #     unless input.length == 5 && input =~ /\A[a-h][1-8] [a-h][1-8]\z/
+  #       raise InvalidGuessError.new #so we don't need the new?
+  #     end
+  #   rescue InvalidGuessError
+  #     puts "Please format like this example: e4 a4"
+  #     retry
+  #   end
+  #   parse_input(input)
+  # end
+
   def get_move
-    begin
-      input = gets.downcase.chomp
-      unless input.length == 5 && input =~ /\A[a-h][1-8] [a-h][1-8]\z/
-        raise InvalidGuessError.new #so we don't need the new?
-      end
-    rescue InvalidGuessError
-      puts "Please format like this example: e4 a4"
-      retry
+    @start_pos, @end_pos = nil, nil
+    until !@start_pos.nil? && !@end_pos.nil?
+      parse_char(read_char)
     end
-    parse_input(input)
+    [@start_pos, @end_pos]
+  end
+
+  def parse_char(input)
+    case input
+    when "\r" # Enter
+       @start_pos.nil? ? @start_pos = @board.cursor : @end_pos = @board.cursor
+    when "\e" || "\u0003" # Escape or ctr c
+      exit 0
+    when "\e[A" # Up
+      @board.cursor = [@board.cursor[0] - 1, @board.cursor[1]]
+    when "\e[B" # Down
+      @board.cursor = [@board.cursor[0] + 1, @board.cursor[1]]
+    when "\e[C" # Right
+      @board.cursor = [@board.cursor[0], @board.cursor[1] + 1]
+    when "\e[D" # Left
+      @board.cursor = [@board.cursor[0], @board.cursor[1] - 1]
+    when "\177" # Backspace
+      @start_pos = nil
+    when "s"
+      @start_pos, @end_pos = "save", "also save"
+    end
+
+    system "clear"
+    @board.display
   end
 
   private
@@ -117,5 +167,13 @@ class HumanPlayer
     end
 end
 
-chess = Game.new(HumanPlayer.new(:white), HumanPlayer.new(:black))
-chess.play
+if $PROGRAM_NAME == __FILE__
+  if ARGV[0].nil?
+    chess = Game.new(HumanPlayer, HumanPlayer)
+    chess.play
+  else
+    filename = ARGV.shift
+    game = YAML.load_file(filename)
+    game.play
+  end
+end

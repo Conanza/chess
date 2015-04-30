@@ -7,8 +7,11 @@ class Board
   COLUMN_BORDER = [' 8 ', ' 7 ', ' 6 ', ' 5 ', ' 4 ', ' 3 ', ' 2 ', ' 1 ']
   ROW_BORDER = "    A  B  C  D  E  F  G  H    "
 
+  attr_accessor :cursor
+
   def initialize(should_setup = true)
     @board = Array.new(8) { Array.new(8) }
+    @cursor = [4, 4]
     setup_board if should_setup
   end
 
@@ -44,12 +47,11 @@ class Board
   def display
     puts ROW_BORDER.white.on_black
     @board.each_with_index do |row, i|
-      # background = i.even? ? :on_yellow: :on_yellow
-      # border = COLUMN_BORDER[i].red.send(background)
       border = COLUMN_BORDER[i].white.on_black
       display_string = border
       row.each_with_index do |space, j|
-        color = (i + j).even? ? :on_blue : :on_magenta
+        color = (i + j).even? ? :on_cyan : :on_magenta
+        color = :on_yellow if [i, j] == @cursor
         space.nil? ? display_string += '   '.send(color) : display_string += " #{space.display} ".send(color)
       end
       puts "#{display_string + border}"
