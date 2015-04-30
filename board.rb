@@ -31,9 +31,8 @@ class Board
   end
 
   def check?(color)
-    king_pos = my_king(color).pos
+    king_pos = find_king(color).pos
     pieces.any? { |piece| piece.moves.include?(king_pos) }
-    #return true if tile.is_a?(Piece) && tile.valid_moves.include?(king_pos)
   end
 
   def checkmate?(color)
@@ -59,7 +58,7 @@ class Board
       display_string = border
       row.each_with_index do |space, j|
         color = (i + j).even? ? :on_cyan : :on_magenta
-        color = (i + j).even? ? :on_yellow : :on_green if green_squares.include?([i, j])
+        color = :on_green if green_squares.include?([i, j])
         color = :on_yellow if [i, j] == @cursor
         space.nil? ? display_string += '   '.send(color) : display_string += " #{space.display} ".send(color)
       end
@@ -100,7 +99,7 @@ class Board
 
   private
 
-    def my_king(color)
+    def find_king(color)
       pieces_of(color).find { |piece| piece.is_a?(King) }
     end
 

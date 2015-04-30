@@ -115,7 +115,7 @@ class HumanPlayer
   #   begin
   #     input = gets.downcase.chomp
   #     unless input.length == 5 && input =~ /\A[a-h][1-8] [a-h][1-8]\z/
-  #       raise InvalidGuessError.new #so we don't need the new?
+  #       raise InvalidGuessError
   #     end
   #   rescue InvalidGuessError
   #     puts "Please format like this example: e4 a4"

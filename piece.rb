@@ -1,7 +1,4 @@
 class InvalidMoveError < StandardError
-  def message
-    'Invalid move.'
-  end
 end
 
 class Piece
@@ -97,18 +94,18 @@ end
 
 class SlidingPiece < Piece
   CARDINAL_STEPS = [
-    [1, 0],
-    [-1, 0],
-    [0, 1],
-    [0, -1]
+    [ 1,  0],
+    [-1,  0],
+    [ 0,  1],
+    [ 0, -1]
   ]
 
-  DIAGONAL_STEPS = [           # REFORMAT
-            [1, 1],
-            [1, -1],
-            [-1, -1],
-            [-1, 1]
-          ]
+  DIAGONAL_STEPS = [          
+    [ 1,  1],
+    [ 1, -1],
+    [-1, -1],
+    [-1,  1]
+  ]
 
   def moves
     results = []
@@ -182,23 +179,23 @@ class Pawn < Piece
 
   private
 
-    def get_attacks
-      direction = color == :black ? 1 : -1
+    def forward_dir
+      color == :black ? 1 : -1
+    end
 
+    def get_attacks
       poss_attacks = ATTACKS.map do |attack|
-        [attack[0] * direction + pos[0], attack[1] + pos[1]]
+        [attack[0] * forward_dir + pos[0], attack[1] + pos[1]]
       end
 
       poss_attacks.select { |pos| on_board?(pos) && @board.occupied_by_enemy?(@color, pos) }
     end
 
     def get_steps
-      direction = color == :black ? 1 : -1
-
       results = []
-      poss_move = [2 * direction + @pos.first, 0 + @pos.last]
+      poss_move = [2 * forward_dir + @pos.first, 0 + @pos.last]
       results << poss_move if !@moved && on_board?(poss_move) && !@board.occupied?(poss_move)
-      poss_move = [1 * direction + @pos.first, 0 + @pos.last]
+      poss_move = [1 * forward_dir + @pos.first, 0 + @pos.last]
       results << poss_move if on_board?(poss_move) && !@board.occupied?(poss_move)
 
       results
