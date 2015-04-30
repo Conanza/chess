@@ -22,14 +22,14 @@ class Game
   def play
     system("clear")
     @board.display
+    sleep(1)
     until @board.checkmate?(@current_player.color)
-      puts "#{current_color}, please make your move."
+      update_message(" #{current_color}, please make your move.")
       begin
         start_pos, end_pos = @current_player.get_move
 
         if start_pos == "save"
-          system "clear"
-          puts "You just saved the game. Come back later!"
+          update_message("  Game Saved. Come back soon! ")
 
           File.open("chess_game.yml", "w") do |f|
             f.puts(self.to_yaml)
@@ -43,13 +43,13 @@ class Game
 
         @board.move(start_pos, end_pos)
       rescue NoPieceError
-        puts "That square does not contain a piece."
+        update_message("  Pick a square with a piece. ")
         retry
       rescue WrongColorError
-        puts "You may only move #{current_color} pieces."
+        update_message("  Please move a #{current_color} piece.  ")
         retry
       rescue InvalidMoveError
-        puts "That is not a valid move."
+        update_message("   That is not a valid move.  ")
         retry
       end
 
@@ -59,7 +59,13 @@ class Game
     end
 
     switch_current_player
-    puts "Game Over. #{current_color} won!"
+    update_message("     Game Over. #{current_color} won!     ")
+  end
+
+  def update_message(string)
+    @board.message_row = string
+    system "clear"
+    @board.display
   end
 
   private
@@ -71,6 +77,8 @@ class Game
     def switch_current_player
       @current_player = @current_player == @player1 ? @player2 : @player1
     end
+
+
 end
 
 class HumanPlayer
@@ -131,13 +139,17 @@ class HumanPlayer
     when "\e" || "\u0003" # Escape or ctr c
       exit 0
     when "\e[A" # Up
-      @board.cursor = [@board.cursor[0] - 1, @board.cursor[1]]
+      pos_cursor = [@board.cursor[0] - 1, @board.cursor[1]]
+      @board.cursor = pos_cursor if on_board?(pos_cursor)
     when "\e[B" # Down
-      @board.cursor = [@board.cursor[0] + 1, @board.cursor[1]]
+      pos_cursor = [@board.cursor[0] + 1, @board.cursor[1]]
+      @board.cursor = pos_cursor if on_board?(pos_cursor)
     when "\e[C" # Right
-      @board.cursor = [@board.cursor[0], @board.cursor[1] + 1]
+      pos_cursor = [@board.cursor[0], @board.cursor[1] + 1]
+      @board.cursor = pos_cursor if on_board?(pos_cursor)
     when "\e[D" # Left
-      @board.cursor = [@board.cursor[0], @board.cursor[1] - 1]
+      pos_cursor = [@board.cursor[0], @board.cursor[1] - 1]
+      @board.cursor = pos_cursor if on_board?(pos_cursor)
     when "\177" # Backspace
       @start_pos = nil
     when "s"
@@ -149,6 +161,10 @@ class HumanPlayer
   end
 
   private
+
+    def on_board?(pos)
+      pos[0].between?(0, 7) && pos[1].between?(0, 7)
+    end
 
     def parse_input(input)
       start, fin = input.split
@@ -174,6 +190,7 @@ if $PROGRAM_NAME == __FILE__
   else
     filename = ARGV.shift
     game = YAML.load_file(filename)
+    game.update_message("         Welcome back!        ")
     game.play
   end
 end

@@ -1,17 +1,20 @@
 require "colorize"
 require_relative 'piece'
 require "byebug"
+require "set"
 
 class Board
   BASE_ROW = [Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook]
   COLUMN_BORDER = [' 8 ', ' 7 ', ' 6 ', ' 5 ', ' 4 ', ' 3 ', ' 2 ', ' 1 ']
   ROW_BORDER = "    A  B  C  D  E  F  G  H    "
+  BLANK_LINE = "                              "
 
-  attr_accessor :cursor
+  attr_accessor :cursor, :message_row
 
   def initialize(should_setup = true)
     @board = Array.new(8) { Array.new(8) }
     @cursor = [4, 4]
+    @message_row = "       Welcome to chess!      "
     setup_board if should_setup
   end
 
@@ -45,12 +48,18 @@ class Board
   end
 
   def display
+    puts BLANK_LINE.white.on_black
+    puts @message_row.white.on_black
+    puts BLANK_LINE.white.on_black
     puts ROW_BORDER.white.on_black
+    green_squares = []
+    green_squares = Set.new(self[@cursor].valid_moves) if !self[@cursor].nil?
     @board.each_with_index do |row, i|
       border = COLUMN_BORDER[i].white.on_black
       display_string = border
       row.each_with_index do |space, j|
         color = (i + j).even? ? :on_cyan : :on_magenta
+        color = :on_green if green_squares.include?([i, j])
         color = :on_yellow if [i, j] == @cursor
         space.nil? ? display_string += '   '.send(color) : display_string += " #{space.display} ".send(color)
       end
