@@ -60,7 +60,8 @@ class Board
         color = (i + j).even? ? :on_cyan : :on_magenta
         color = :on_green if green_squares.include?([i, j])
         color = :on_yellow if [i, j] == @cursor
-        space.nil? ? display_string += '   '.send(color) : display_string += " #{space.display} ".send(color)
+        space.nil? ? display_string += '   '.send(color) : 
+          display_string += " #{space.display} ".send(color)
       end
       puts "#{display_string + border}"
     end

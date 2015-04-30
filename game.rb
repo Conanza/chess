@@ -77,8 +77,6 @@ class Game
     def switch_current_player
       @current_player = @current_player == @player1 ? @player2 : @player1
     end
-
-
 end
 
 class HumanPlayer
@@ -168,10 +166,8 @@ class HumanPlayer
 
     def parse_input(input)
       start, fin = input.split
-      [
-        [to_row(start[1]), to_column(start[0])],
-        [to_row(fin[1]), to_column(fin[0])]
-      ]
+      [[to_row(start[1]), to_column(start[0])], 
+        [to_row(fin[1]), to_column(fin[0])]]
     end
 
     def to_column(char)

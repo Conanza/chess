@@ -186,9 +186,9 @@ class Pawn < Piece
     def get_attacks
       poss_attacks = ATTACKS.map do |attack|
         [attack[0] * forward_dir + pos[0], attack[1] + pos[1]]
+      end.select do |pos| 
+        on_board?(pos) && @board.occupied_by_enemy?(@color, pos)
       end
-
-      poss_attacks.select { |pos| on_board?(pos) && @board.occupied_by_enemy?(@color, pos) }
     end
 
     def get_steps
