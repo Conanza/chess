@@ -1,6 +1,6 @@
 # Chess
 
-![chess-ss](chess-screenshot.jpg)
+![chess-ss](./images/chess-screenshot.jpg)
 
 ## Description
 
