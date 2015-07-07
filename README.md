@@ -1,5 +1,7 @@
 # Chess
 
+![chess-ss](chess-screenshot.jpg)
+
 ## Description
 
 Built with Ruby using Object Oriented principles and designed to run in the terminal.
