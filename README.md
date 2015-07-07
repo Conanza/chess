@@ -16,7 +16,7 @@ Built with Ruby using Object Oriented principles and designed to run in the term
 
 Be sure to `gem install colorize` to install the colorize gem.
 
-To play a new game, run `ruby game.rb` at the command line.
+To play a new game, run `ruby game.rb` at the command line from the root directory.
 
 Use the arrow keys and press `ENTER` to select pieces to move.
 

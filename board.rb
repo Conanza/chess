@@ -1,5 +1,5 @@
 require "colorize"
-require_relative 'piece'
+require_relative 'pieces'
 require "byebug"
 require "set"
 
